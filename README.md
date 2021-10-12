@@ -13,28 +13,30 @@ The purpose of this application is to provide a way for those that like farming 
 ### Backend
 - Django 
 - DjangoRestFramework
+- JWT
+- Pillow
 
 ## User Stories
 
 
 #### Story 
-As a player, I want to be able to share my thoughts to the development team and other players.  Along with commenting on other players comments. 
+As a player, I want to be able to share my thoughts to the development team and other players.  Along with commenting on other players comments because I want to be able to share my thoughts and opinions.  
 #### Tasks
 - Provide a social communication platform that allows user to post images and short messages
     - This will include a database object for each post.  
 - Each post will be allow replies to be connected to it
 #### Story 
-As a player, I want to be able to find other posts about similar topics, and customize my feed  
+As a player, I want to be able to find other posts about similar topics, and customize my feed so that I can easily find content that interests me.   
 #### Tasks 
 - Allow for the use of hastags in a post for sorting through the database objects 
 - Allow search by sorting
 - Use selected hashtags for sorting initial feed upon page load
 #### Story 
-As a player, I want to be able to try out the game and save my progress
+As a player, I want to be able to try out the game and save my progress, because I like farming simulators and want to continue where I left off.  
 #### Tasks
 - Link the user object to save game data
 #### Story 
-As an admin, I want to be able to remove inappropriate posts and provide temporary bans for users 
+As an admin, I want to be able to remove inappropriate posts and provide temporary bans for users so that we can keep the community healthy and family friendly.
 #### Tasks 
 - All users to report inappropriate posts
 - Provide administrators the ability to investigate reports posts and provide temporary bans if necessary

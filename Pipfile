@@ -5,6 +5,10 @@ name = "pypi"
 
 [packages]
 django = "*"
+djangorestframework = "*"
+postgres = "*"
+pillow = "*"
+django-rest-knox = "*"
 
 [dev-packages]
 

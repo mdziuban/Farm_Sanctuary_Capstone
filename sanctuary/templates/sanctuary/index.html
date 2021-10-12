@@ -1,0 +1,113 @@
+{% extends 'sanctuary/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1 class="text-center">The Sanctuary</h1>
+<article class='container' id='app'>
+  <div class="row">
+    <div class="col-4">
+      <div style="position:fixed;" class="col-3 border border-dark">
+        <img src='{% static "sanctuary\waterfall.JPG"  %}' class="img-thumbnail ">
+        <h2 class="text-center">d( userData.display_name )b</h2>
+      </div>
+    </div>
+    <div class="col-8 border border-dark">
+      <div class="row">
+        <input v-model="newPost.text_content" type='text' placeholder="New Post Content">
+        <!-- <input v-model="newPost.img_content" type='text' placeholder="New Img Content"> -->
+        <input v-model="newPost.hashtags" type='text' placeholder="New Hashtag Content">
+        <button @click="postFeed()" class="btn btn-success">submit</button>
+        <ul class="list-group">
+          <li v-for="post in posts" class="list-group-item">
+            <h3>d( post.display_name )b</h3>
+            <p>d( post.text_content )b</p>
+            <!-- <img v-if="post.img_content" :src="'api/'+post.img_content"> -->
+            <p>d( post.hashtags )b</p>
+            <input v-model="replyPost.text_content" type="text" placeholder="Reply">
+            <!-- <input v-model="replyPost.img_content" type="image"> -->
+            <button @click="replyPost()" class="btn btn-success mx-3">Reply</button>
+            <p>
+              <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                Link with href
+              </a>
+              <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                Button with data-bs-target
+              </button>
+            </p>
+            <div class="collapse" id="collapseExample">
+              <div class="card card-body">
+                Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</article>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+<script>
+  const App = {
+    delimiters: ['d(', ')b'],
+    data() {
+      return {
+        posts: [],
+        newPost: {},
+        userData: {},
+        replyPost: {}
+      }
+    },
+    methods: {
+      loadFeed() {
+        fetch('/api/post/', {
+          method: 'GET'
+        }).then(response => response.json())
+          .then(data => this.posts = data)
+          .then(data => console.log(data))
+      },
+      postFeed() {
+        fetch('/api/post/', {
+          method: 'POST',
+          body: JSON.stringify({
+            user: '1',
+            text_content: this.newPost.text_content,
+            img_content: this.newPost.img_content,
+            hashtags: this.newPost.hashtags
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+        }).then(window.location.reload())
+      },
+      replyPost() {
+        fetch('/api/post/', {
+          method: 'POST',
+          body: JSON.stringify({
+            user: '1',
+            text_content: '',
+            img_content: '',
+          })
+        })
+      },
+      getUser() {
+        fetch('/api/player/1', {
+          method: 'GET'
+        }).then(response => response.json())
+          .then(data => this.userData = data)
+      }
+    },
+    created() {
+      this.loadFeed(),
+        this.getUser()
+    }
+  }
+  Vue.createApp(App).mount('#app')
+</script>
+</body>
+
+{% endblock %}
