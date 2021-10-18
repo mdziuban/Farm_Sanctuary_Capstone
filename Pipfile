@@ -9,6 +9,7 @@ djangorestframework = "*"
 postgres = "*"
 pillow = "*"
 django-rest-knox = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 

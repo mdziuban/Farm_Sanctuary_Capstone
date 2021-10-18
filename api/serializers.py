@@ -1,18 +1,19 @@
 from rest_framework import serializers
-from sanctuary.models import Player, Post, Reply, GameData
+from sanctuary.models import Player, Post, Reply, GameData, User
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Player
+        model = User
         fields = '__all__'
 
 class PostSerializer(serializers.ModelSerializer):
-    display_name = serializers.CharField(source='user.display_name', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = Post
         fields = '__all__'
 
 class ReplySerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = Reply
         fields = '__all__'

@@ -1,12 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Player(models.Model):
-    display_name = models.CharField(max_length=20)
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=30)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=20)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=500)
     suspended = models.BooleanField()
 
@@ -14,7 +11,7 @@ class Player(models.Model):
         return self.display_name
 
 class Post(models.Model):
-    user = models.ForeignKey(Player, on_delete=models.PROTECT, related_name='user')
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='post_user')
     created = models.DateTimeField(auto_now_add=True)
     text_content = models.CharField(max_length=200, blank=True)
     img_content = models.ImageField(blank=True)
@@ -22,9 +19,10 @@ class Post(models.Model):
 
 class Reply(models.Model):
     post_id = models.ForeignKey(Post, on_delete=models.PROTECT, related_name='post')
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='reply_user')
     reply_created = models.DateTimeField(auto_now_add=True)
-    text_content = models.CharField(max_length=200)
-    img_content = models.ImageField()
+    text_content = models.CharField(max_length=200, blank=True)
+    img_content = models.ImageField(blank=True)
 
 class GameData(models.Model):
     save_file = models.JSONField()

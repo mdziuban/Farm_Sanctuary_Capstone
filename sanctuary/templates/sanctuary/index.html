@@ -9,35 +9,34 @@
     <div class="col-4">
       <div style="position:fixed;" class="col-3 border border-dark">
         <img src='{% static "sanctuary\waterfall.JPG"  %}' class="img-thumbnail ">
-        <h2 class="text-center">d( userData.display_name )b</h2>
+        <h2 class="text-center">d( userData.username )b</h2>
       </div>
     </div>
     <div class="col-8 border border-dark">
       <div class="row">
         <input v-model="newPost.text_content" type='text' placeholder="New Post Content">
         <!-- <input v-model="newPost.img_content" type='text' placeholder="New Img Content"> -->
-        <input v-model="newPost.hashtags" type='text' placeholder="New Hashtag Content">
         <button @click="postFeed()" class="btn btn-success">submit</button>
         <ul class="list-group">
           <li v-for="post in posts" class="list-group-item">
-            <h3>d( post.display_name )b</h3>
+            <h3>d( post.username )b</h3>
+            <p>d( post.created )b</p>
             <p>d( post.text_content )b</p>
             <!-- <img v-if="post.img_content" :src="'api/'+post.img_content"> -->
             <p>d( post.hashtags )b</p>
             <input v-model="replyPost.text_content" type="text" placeholder="Reply">
             <!-- <input v-model="replyPost.img_content" type="image"> -->
-            <button @click="replyPost()" class="btn btn-success mx-3">Reply</button>
+            <button @click="replyToPost(post.id)" class="btn btn-success mx-3">Reply</button>
             <p>
-              <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                Link with href
-              </a>
-              <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                Button with data-bs-target
-              </button>
+              <button class="btn btn-primary" type="button" @click='loadReplies(post.id)'>Show Replies</button>
             </p>
-            <div class="collapse" id="collapseExample">
-              <div class="card card-body">
-                Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+            <div v-show='post.id === postReplyShow' class="card card-body">
+              <div v-for='reply in replies'>
+                <div class="card card-body">
+                  <h4>d( reply.username )b</h4>
+                  <p>d( reply.reply_created )b</p>
+                  <p>d( reply.text_content )b</p>
+                </div>
               </div>
             </div>
           </li>
@@ -50,15 +49,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
   const App = {
     delimiters: ['d(', ')b'],
     data() {
       return {
         posts: [],
+        replies: [],
+        postReplyShow: '',
         newPost: {},
         userData: {},
-        replyPost: {}
+        replyPost: {},
+        isHidden: false
       }
     },
     methods: {
@@ -70,35 +73,52 @@
           .then(data => console.log(data))
       },
       postFeed() {
+        let [hashWords, content] = this.splitByHashtag(this.newPost.text_content)
         fetch('/api/post/', {
           method: 'POST',
           body: JSON.stringify({
-            user: '1',
-            text_content: this.newPost.text_content,
-            img_content: this.newPost.img_content,
-            hashtags: this.newPost.hashtags
+            user: '3',
+            text_content: content,
+            //img_content: this.newPost.img_content,
+            hashtags: hashWords.join(" ")
           }),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           }
-        }).then(window.location.reload())
-      },
-      replyPost() {
-        fetch('/api/post/', {
-          method: 'POST',
-          body: JSON.stringify({
-            user: '1',
-            text_content: '',
-            img_content: '',
-          })
         })
       },
+      replyToPost(post) {
+        fetch('/api/replyadd/', {
+          method: 'POST',
+          body: JSON.stringify({
+            user: '2',
+            text_content: this.replyPost.text_content,
+            post_id: post
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+        })
+      },
+      loadReplies(post) {
+        this.postReplyShow = post,
+        axios.get('/api/reply', {
+          params: {
+            post_id: post
+          }
+        }).then(response => this.replies = response.data)
+        .then(response => console.log(response))
+      },
       getUser() {
-        fetch('/api/player/1', {
-          method: 'GET'
-        }).then(response => response.json())
-          .then(data => this.userData = data)
+        axios.get('/api/player/3', {
+        }).then(response => this.userData = response.data)
+      },
+      splitByHashtag(stringToSplit) {
+        let hashWords = stringToSplit.match(/#(\w+)/g)
+        let content = stringToSplit.split('#')[0]
+        return [hashWords, content]
       }
     },
     created() {

@@ -1,0 +1,99 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static '/sanctuary/style.css' %}">
+    <script src="https://unpkg.com/vue@next"></script>
+    <title>Sanctuary</title>
+</head>
+
+<body>
+    <article>
+        <div class="row" id="loginapp">
+            <div class="col-sm-6">
+                <img src="{% static '/sanctuary/waterfall.JPG' %}" class="w-100" alt="Waterfall">
+            </div>
+            <div class="col-sm-6 ">
+                <div class="row h-50 d-flex justify-content-center align-items-center">
+                    <div class="row mb-3">
+                        <h1 class='text-center my-3'>Welcome to Sanctuary</h1>
+                    </div>
+                    <h4 v-if="incorrectAuth">The username or password you entered was incorrect.</h4>
+                    <form v-on:submit.prevent='login()'>
+                        <div class="row mb-3">
+                            <div class="col-sm-10">
+                                <input type="text" name='username' class="form-control" id="user" v-model='username'
+                                    placeholder="Username">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-10">
+                                <input type="password" name="password" class="form-control" id="pass" v-model='password'
+                                    placeholder="Password">
+                            </div>
+                        </div>
+                        <div class="col-sm-10 d-grid mb-3">
+                            <input type="submit" class="btn btn-primary btn-lg" value='Login'>
+                        </div>
+                    </form>
+                    <div class="row h-50 d-flex justify-content-center align-items-center">
+                        <div class="row mb-3">
+                            <div class="col-sm-10 d-grid mb-3">
+                                <a class="btn btn-outline-secondary btn-lg" type="button" href="">Register</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+        crossorigin="anonymous"></script>
+</body>
+<script>
+    const LoginApp = {
+        data() {
+            return {
+                username: '',
+                password: '',
+                incorrectAuth: false,
+                data: [],
+                register: false,
+                access: '',
+                refresh: '',
+            }
+        },
+        methods: {
+            login() {
+                fetch('/api/token/', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: this.username,
+                        password: this.password,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    }
+                }).then(response => response.json())
+                .then(access => this.access = access)
+                .then(refresh => this.refresh = refresh)
+                .then(console.log(this.access))
+            }
+        }
+    }
+    Vue.createApp(LoginApp).mount('#loginapp')
+</script>
+
+</html>
